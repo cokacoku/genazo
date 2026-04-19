@@ -172,7 +172,8 @@ h1 {
   touch-action: none;
 }
 
-.pet_zone img {
+.pet_zone .img-normal,
+.pet_zone .img-happy {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -200,6 +201,15 @@ h1 {
 
 .pet_zone.petting .img-happy {
   opacity: 1;
+}
+
+.pet_zone img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110%;
+  height: 110%;
+  transform: translate(-50%, -50%);
 }
 
 .area_count {

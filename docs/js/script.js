@@ -21,7 +21,7 @@ function lerp(a, b, t) {
 
 function applyTransform(angle) {
   const tx = angle * 2.5;
-  const t = `rotate(${angle}deg) translateX(${tx}px) scale(1.03)`;
+  const t = `rotate(${angle}deg) translateX(${tx}px)`;
   petImgNormal.style.transform = t;
   petImgHappy.style.transform = t;
 }
