@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <title>Pet Kitaro 🐱</title>
+    <link href="./css/petpet.css" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>Pet Kitaro 🐱</h1>
+      <p class="guide">
+        마우스 또는 손가락을 좌우로 움직여 쓰다듬어 보세요.
+        <br />
+        マウスや指を左右に動かして、なでなでしてみてください。
+      </p>
+      <div class="pet_zone" id="petZone" aria-label="동물 쓰다듬기 영역">
+        <img class="img-normal" src="./asset/test1.jpg" alt="Normal Kitaro" />
+        <img class="img-happy" src="./asset/test2.jpg" alt="Happy Kitaro" />
+      </div>
+      <div class="area_count">
+        <strong class="count">
+          Pet Count
+          <b id="petCount" class="number">0</b>
+        </strong>
+      </div>
+    </main>
+    <script src="./js/script.js"></script>
+  </body>
+</html>
