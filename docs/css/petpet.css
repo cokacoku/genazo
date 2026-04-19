@@ -165,8 +165,8 @@ h1 {
   aspect-ratio: 1 / 1;
   border-radius: 16px;
   overflow: hidden;
-  border: 2px solid #d9ecff;
-  background: #eef7ff;
+  border: 2px solid #000;
+  background: #ff5858;
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -217,7 +217,7 @@ h1 {
 .area_count .number {
   display: inline-block;
   margin-left: 6px;
-  color: #0b72d9;
+  color: #ff6a6a;
   font-size: 24px;
   line-height: 30px;
   vertical-align: top;
