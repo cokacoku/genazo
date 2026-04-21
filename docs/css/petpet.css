@@ -99,6 +99,7 @@ nav,
 section {
   display: block;
 }
+
 body {
   font-family:
     "Pretendard",
@@ -118,15 +119,19 @@ body {
     sans-serif;
   font-size: 14px;
   line-height: 20px;
+  letter-spacing: -0.5px;
 }
+
 ol,
 ul {
   list-style: none;
 }
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -138,12 +143,61 @@ body {
 }
 
 .card {
+  position: relative;
   max-width: 460px;
   background: #fff;
   border-radius: 20px;
-  margin: 20px;
-  padding: 22px;
+  margin: 70px 20px;
+  padding: 22px 15px;
   box-shadow: 0 12px 30px rgba(31, 42, 55, 0.12);
+}
+
+.animal_selector {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.animal_button {
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4fbff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s,
+    transform 0.12s;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 4px 4px rgba(31, 42, 55, 0.12);
+}
+
+.animal_button + .animal_button {
+  margin-left: 6px;
+}
+
+.animal_button .btn-emoji {
+  display: block;
+  padding: 9px 0;
+  font-size: 26px;
+  line-height: 32px;
+}
+
+.animal_button:hover {
+  background: #eee;
+}
+
+.animal_button.active {
+  background: #333;
+  transform: scale(1.04);
 }
 
 h1 {
@@ -166,10 +220,22 @@ h1 {
   border-radius: 16px;
   overflow: hidden;
   border: 2px solid #000;
-  background: #ff5858;
   cursor: grab;
   user-select: none;
   touch-action: none;
+  box-sizing: border-box;
+}
+
+.pet_zone.is-kitaro {
+  background-color: #ff5858;
+}
+
+.pet_zone.is-gegero {
+  background-color: #5ed65b;
+}
+
+.pet_zone.is-mizuki {
+  background-color: #ffea59;
 }
 
 .pet_zone .img-normal,

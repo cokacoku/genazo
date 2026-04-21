@@ -9,24 +9,40 @@
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
     />
-    <title>NadeNade Kitaro 🐱</title>
+    <title>NadeNade GeGeGe 🐱🐶</title>
     <link href="./css/petpet.css" rel="stylesheet" />
   </head>
   <body>
     <main class="card">
-      <h1>NADENADE KITARO 🐱</h1>
+      <div class="animal_selector" id="animalSelector">
+        <button type="button" class="animal_button active" data-animal="kitaro">
+          <span class="btn-emoji">👹</span>
+        </button>
+        <button type="button" class="animal_button" data-animal="gegero">
+          <span class="btn-emoji">👁️</span>
+        </button>
+        <button type="button" class="animal_button" data-animal="mizuki">
+          <span class="btn-emoji">💧</span>
+        </button>
+      </div>
+      <h1 id="pageTitle">NADENADE KITARO🐱</h1>
       <p class="guide">
         마우스 또는 손가락을 좌우로 움직여 쓰다듬어 보세요.
         <br />
         マウスや指を左右に動かして、なでなでしてみてください。
       </p>
-      <div class="pet_zone" id="petZone" aria-label="동물 쓰다듬기 영역">
+      <div
+        class="pet_zone is-kitaro"
+        id="petZone"
+        aria-label="동물 쓰다듬기 영역"
+      >
         <span class="img-normal">
           <img
             src="./asset/kitaro1.jpg"
             width="900"
             height="900"
             alt="Normal Kitaro"
+            class="image_default"
           />
         </span>
         <span class="img-happy">
@@ -35,6 +51,7 @@
             width="900"
             height="900"
             alt="Happy Kitaro"
+            class="image_happy"
           />
         </span>
       </div>
