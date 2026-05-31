@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#game-wrapper {
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+h1 {
+  margin: 5px 0;
+  font-size: 1.5rem;
+}
+.score-board {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f1c40f;
+  margin: 5px 0 15px 0;
+}
+
+.canvas-container {
+  margin: 0 auto;
+  background-color: #ecf0f1;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  position: relative;
+  touch-action: none;
+  overflow: hidden; /* 오버레이가 둥근 모서리를 넘지 않게 설정 */
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- Dimmed Overlay UI Styles --- */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* 어두운 반투명 배경 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#start-screen h2,
+#game-over-screen h2 {
+  color: #ecf0f1;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.final-score-text {
+  font-size: 3.5rem;
+  color: #f1c40f;
+  margin: 0 0 30px 0;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #e74c3c;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+.btn:hover {
+  background-color: #c0392b;
+}
+
+.instructions {
+  margin-top: 15px;
+  font-size: 0.85rem;
+  color: #bdc3c7;
+}
