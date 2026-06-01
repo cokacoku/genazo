@@ -61,7 +61,7 @@ function resizeCanvas() {
   }
 
   // 2. 전체 화면 높이에서 UI 여백을 제외한 영역을 최대 높이로 설정
-  const maxHeight = window.innerHeight - 140;
+  const maxHeight = window.innerHeight - 200;
 
   let displayWidth = maxWidth;
   let displayHeight = displayWidth * (LOGICAL_HEIGHT / LOGICAL_WIDTH);
