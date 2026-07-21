@@ -1,0 +1,347 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "OneStoreMobilePop";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff")
+    format("woff");
+  font-weight: normal;
+  font-display: swap;
+}
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  font-family:
+    "Pretendard",
+    "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN",
+    "Meiryo",
+    "Yu Gothic",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    "Helvetica Neue",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.5px;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #ecf0f1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  background-image: url("../asset/bg.jpg");
+  background-position: 50px 120px;
+}
+
+#game-wrapper {
+  text-align: center;
+  width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  padding: 20px 0;
+}
+
+h1 {
+  margin-bottom: 15px;
+  font-family: "OneStoreMobilePop", sans-serif;
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: 1px;
+  color: #000;
+}
+
+.score-board {
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.5px;
+  font-weight: bold;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+#score {
+  color: #3cafcb;
+}
+
+.wrapper {
+  position: relative;
+}
+
+.canvas-container {
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  position: relative;
+  touch-action: none;
+  overflow: hidden; /* 오버레이가 둥근 모서리를 넘지 않게 설정 */
+  -webkit-touch-callout: none;
+}
+
+.account {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -20px;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+  color: #888;
+}
+
+.account .link {
+  color: inherit;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- Dimmed Overlay UI Styles --- */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* 어두운 반투명 배경 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#start-screen h2,
+#game-over-screen h2 {
+  color: #ecf0f1;
+  margin-bottom: 10px;
+  font-size: 30px;
+  line-height: 36px;
+}
+
+.final-score-text {
+  font-size: 55px;
+  line-height: 65px;
+  color: #f1c40f;
+  margin: 0 0 25px 0;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.gameover {
+  animation: 1s ease-in-out rotate alternate 2s infinite;
+  pointer-events: none;
+}
+
+.btn {
+  padding: 18px 25px;
+  font-size: 25px;
+  line-height: 30px;
+  font-weight: bold;
+  color: #ffde24;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid #ffde24;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+}
+.btn.restart {
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn:hover {
+  background-color: #ffde24;
+  color: #111;
+}
+
+.instructions {
+  margin-top: 15px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #b6b32a;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(-1deg);
+  }
+  70% {
+    transform: rotate(-1deg);
+  }
+  80% {
+    transform: rotate(1deg);
+  }
+  90% {
+    transform: rotate(-1deg);
+  }
+  100% {
+    transform: rotate(1deg);
+  }
+}
+@media screen and (max-width: 450px) {
+  .final-score-text {
+    margin-bottom: 15px;
+  }
+  .gameover {
+    width: 160px;
+    height: 160px;
+  }
+}
+@media screen and (max-width: 360px) {
+  h1 {
+    font-size: 25px;
+    line-height: 30px;
+  }
+  .btn {
+    padding: 15px 20px;
+    font-size: 20px;
+    line-height: 25px;
+  }
+  .final-score-text {
+    margin-bottom: 10px;
+    font-size: 45px;
+    line-height: 55px;
+  }
+  .gameover {
+    width: 120px;
+    height: 120px;
+  }
+}
