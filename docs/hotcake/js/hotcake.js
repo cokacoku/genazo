@@ -72,7 +72,7 @@ const I18N = {
     soundTitle: "サウンド ON/OFF",
     badgeRetro: "GENAZO FANMADE GAME",
     titleHtml:
-      'ミズキさんの<br><span class="text-[#FFE169]">ホットケーキ</span>タワー',
+      'ミズキさんの<br><span class="text-[#FFE169]">ホットケーキ</span><br>タワー',
     subtitleHtml:
       "フライパンを弾いてホットケーキを高く積み上げよう！<br>完成したタワーの頂上にはバターが乗るよ！",
     rule1Html: "<b>クリック / タップ / Spaceキー</b>でトス！",
@@ -181,7 +181,7 @@ function applyLocalizationToDOM() {
     if (descP) descP.innerHTML = T.subtitleHtml;
 
     const ruleRows = startOv.querySelectorAll(".toy-card > div");
-    if (ruleRows.length >= 3) {
+    if (ruleRows.length >= 2) {
       if (ruleRows[0].children[1])
         ruleRows[0].children[1].innerHTML = T.rule1Html;
       if (ruleRows[1].children[1])
