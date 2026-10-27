@@ -50,44 +50,11 @@ const LOGICAL_HEIGHT = 640;
 
 let cachedCanvasRect = null;
 
-function resizeCanvas() {
-  let maxWidth = window.innerWidth * 0.92;
-
-  const ABSOLUTE_MAX_WIDTH = 420;
-  if (maxWidth > ABSOLUTE_MAX_WIDTH) {
-    maxWidth = ABSOLUTE_MAX_WIDTH;
-  }
-
-  const maxHeight = window.innerHeight - 200;
-
-  let displayWidth = maxWidth;
-  let displayHeight = displayWidth * (LOGICAL_HEIGHT / LOGICAL_WIDTH);
-
-  if (displayHeight > maxHeight) {
-    displayHeight = maxHeight;
-    displayWidth = displayHeight * (LOGICAL_WIDTH / LOGICAL_HEIGHT);
-  }
-
-  container.style.width = `${displayWidth}px`;
-  container.style.height = `${displayHeight}px`;
-
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = LOGICAL_WIDTH * dpr;
-  canvas.height = LOGICAL_HEIGHT * dpr;
-
-  ctx.scale(dpr, dpr);
-  cachedCanvasRect = canvas.getBoundingClientRect();
-}
-
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener("orientationchange", resizeCanvas);
-
 // --- Game Objects ---
 const paddle = {
   width: 140,
   height: 140,
-  x: (LOGICAL_WIDTH - 140) / 2, // 초기 중앙 정렬 공식 수정 (width 반영)
+  x: (LOGICAL_WIDTH - 140) / 2,
   speed: 8.5,
   isMovingLeft: false,
   isMovingRight: false,
@@ -97,10 +64,99 @@ const ball = {
   x: LOGICAL_WIDTH / 2,
   y: LOGICAL_HEIGHT - 400,
   dx: BASE_DX,
-  dy: Math.abs(BASE_DY), // 💡 시작할 때 아래로 떨어지도록 양수로 설정
+  dy: Math.abs(BASE_DY),
   radius: 60,
   angle: 0,
 };
+
+// --- Render Functions ---
+function drawBall() {
+  ctx.save();
+  ctx.translate(ball.x, ball.y);
+  ctx.rotate(ball.angle);
+
+  const size = ball.radius * 2;
+  ctx.drawImage(ballImg, -ball.radius, -ball.radius, size, size);
+  ctx.restore();
+}
+
+function drawPaddle() {
+  ctx.drawImage(
+    paddleImg,
+    paddle.x,
+    LOGICAL_HEIGHT - paddle.height,
+    paddle.width,
+    paddle.height,
+  );
+}
+
+function drawStaticScene() {
+  ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  if (ballImg.complete && paddleImg.complete) {
+    drawBall();
+    drawPaddle();
+  }
+}
+
+// --- Responsive Resize ---
+function resizeCanvas() {
+  const gameWrapper = document.getElementById("game-wrapper");
+  const titleEl = document.querySelector("h1");
+  const scoreBoardEl = document.querySelector(".score-board");
+  const accountEl = document.querySelector(".account");
+
+  // 1. 사용 가능한 전체 영역의 패딩 계산
+  const wrapperStyle = window.getComputedStyle(gameWrapper);
+  const paddingY =
+    parseFloat(wrapperStyle.paddingTop) +
+    parseFloat(wrapperStyle.paddingBottom);
+  const paddingX =
+    parseFloat(wrapperStyle.paddingLeft) +
+    parseFloat(wrapperStyle.paddingRight);
+
+  // 상단 UI(제목, 점수판) 및 하단 출처 텍스트가 차지하는 실제 높이 합산
+  const otherElementsHeight =
+    (titleEl ? titleEl.offsetHeight + 12 : 0) +
+    (scoreBoardEl ? scoreBoardEl.offsetHeight + 12 : 0) +
+    (accountEl ? accountEl.offsetHeight + 12 : 0);
+
+  // 2. 캔버스가 들어갈 수 있는 최대 가로/세로 크기 도출 (PC 최대 너비 480px)
+  const ABSOLUTE_MAX_WIDTH = 480;
+  let maxWidth = Math.min(window.innerWidth - paddingX, ABSOLUTE_MAX_WIDTH);
+  let maxHeight = window.innerHeight - paddingY - otherElementsHeight;
+
+  if (maxHeight < 250) maxHeight = 250;
+
+  // 3. 기본 비율(360:640 = 9:16)을 유지하며 디바이스에 맞는 최적 크기 계산
+  let displayWidth = maxWidth;
+  let displayHeight = displayWidth * (LOGICAL_HEIGHT / LOGICAL_WIDTH);
+
+  if (displayHeight > maxHeight) {
+    displayHeight = maxHeight;
+    displayWidth = displayHeight * (LOGICAL_WIDTH / LOGICAL_HEIGHT);
+  }
+
+  container.style.width = `${Math.floor(displayWidth)}px`;
+  container.style.height = `${Math.floor(displayHeight)}px`;
+
+  // 4. 고해상도(Retina 등) 디스플레이 대응 및 스케일 초기화
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = LOGICAL_WIDTH * dpr;
+  canvas.height = LOGICAL_HEIGHT * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cachedCanvasRect = canvas.getBoundingClientRect();
+
+  // 5. 캔버스 크기가 재설정되면 그려진 내용이 초기화되므로 대기 상태일 때 다시 그리기
+  if (!isPlaying) {
+    drawStaticScene();
+  }
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", () => {
+  setTimeout(resizeCanvas, 100);
+});
 
 // --- Game Control Functions ---
 function resetGame() {
@@ -112,7 +168,7 @@ function resetGame() {
   ball.x = LOGICAL_WIDTH / 2;
   ball.y = LOGICAL_HEIGHT - 400;
   ball.dx = Math.random() > 0.5 ? BASE_DX : -BASE_DX;
-  ball.dy = Math.abs(BASE_DY); // 💡 리셋 시에도 아래로 떨어지도록 양수 고정
+  ball.dy = Math.abs(BASE_DY);
   ball.angle = 0;
 
   paddle.x = (LOGICAL_WIDTH - paddle.width) / 2;
@@ -190,41 +246,6 @@ container.addEventListener("touchstart", handlePointerMove, { passive: false });
 container.addEventListener("touchmove", handlePointerMove, { passive: false });
 container.addEventListener("mousemove", handlePointerMove);
 
-// --- Render Functions ---
-function drawBall() {
-  ctx.save();
-  ctx.translate(ball.x, ball.y);
-  ctx.rotate(ball.angle);
-
-  const size = ball.radius * 2;
-  ctx.drawImage(ballImg, -ball.radius, -ball.radius, size, size);
-  ctx.restore();
-}
-
-function drawPaddle() {
-  ctx.drawImage(
-    paddleImg,
-    paddle.x,
-    LOGICAL_HEIGHT - paddle.height,
-    paddle.width,
-    paddle.height,
-  );
-}
-
-function drawInitialBackground() {
-  ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-  if (ballImg.complete && paddleImg.complete) {
-    drawBall();
-    drawPaddle();
-  } else {
-    ballImg.onload = paddleImg.onload = () => {
-      ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-      drawBall();
-      drawPaddle();
-    };
-  }
-}
-
 // --- Main Game Loop ---
 function updateGame() {
   if (!isPlaying) return;
@@ -234,24 +255,22 @@ function updateGame() {
   drawBall();
   drawPaddle();
 
-  // 💡 [버그 수정] 좌우 벽 충돌 판정 및 즉시 위치 보정
+  // 좌우 벽 충돌 판정 및 즉시 위치 보정
   if (ball.x + ball.dx < ball.radius) {
-    ball.dx = Math.abs(ball.dx); // 무조건 오른쪽 이동
-    ball.x = ball.radius; // 좌측 벽 표면에 고정
+    ball.dx = Math.abs(ball.dx);
+    ball.x = ball.radius;
   } else if (ball.x + ball.dx > LOGICAL_WIDTH - ball.radius) {
-    ball.dx = -Math.abs(ball.dx); // 무조건 왼쪽 이동
-    ball.x = LOGICAL_WIDTH - ball.radius; // 우측 벽 표면에 고정
+    ball.dx = -Math.abs(ball.dx);
+    ball.x = LOGICAL_WIDTH - ball.radius;
   }
 
-  // 💡 [버그 수정] 상단 벽 충돌 판정 및 즉시 위치 보정
+  // 상단 벽 충돌 판정 및 즉시 위치 보정
   if (ball.y + ball.dy < ball.radius) {
-    ball.dy = Math.abs(ball.dy); // 무조건 아래로 이동
-    ball.y = ball.radius; // 천장 표면에 고정
+    ball.dy = Math.abs(ball.dy);
+    ball.y = ball.radius;
   }
-
   // 하단 패들 충돌 판단 영역
   else if (ball.y + ball.dy > LOGICAL_HEIGHT - paddle.height - ball.radius) {
-    // 💡 ball.dy > 0 조건을 주어 아래로 떨어질 때만 패들 충돌을 연산하도록 제한
     if (
       ball.dy > 0 &&
       ball.x >= paddle.x &&
@@ -272,7 +291,7 @@ function updateGame() {
       ball.dx = currentSpeed * Math.sin(bounceAngle);
       ball.dy = -currentSpeed * Math.cos(bounceAngle);
 
-      // 💡 [버그 수정] 패들 내부에 끼어서 점수가 폭발하지 않도록 패들 위 표면으로 즉시 강제 텔레포트
+      // 패들 내부 끼임 방지
       ball.y = LOGICAL_HEIGHT - paddle.height - ball.radius;
 
       score += 100;
@@ -298,4 +317,7 @@ function updateGame() {
   animationId = requestAnimationFrame(updateGame);
 }
 
-drawInitialBackground();
+// --- Initialization ---
+ballImg.onload = drawStaticScene;
+paddleImg.onload = drawStaticScene;
+resizeCanvas();
