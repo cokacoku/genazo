@@ -35,6 +35,7 @@ let score = 0;
 let isPlaying = false;
 let animationId = null;
 let speedIntervalId = null;
+let lastTime = 0;
 
 // --- Speed Level Configurations ---
 let speedLevel = 1;
@@ -44,6 +45,8 @@ const SPEED_MULTIPLIER = 1.1;
 
 const BASE_DX = 2.5;
 const BASE_DY = -4.5;
+const TARGET_FPS = 60;
+const FRAME_DURATION = 1000 / TARGET_FPS; // 약 16.67ms
 
 const LOGICAL_WIDTH = 360;
 const LOGICAL_HEIGHT = 640;
@@ -105,7 +108,6 @@ function resizeCanvas() {
   const scoreBoardEl = document.querySelector(".score-board");
   const accountEl = document.querySelector(".account");
 
-  // 1. 사용 가능한 전체 영역의 패딩 계산
   const wrapperStyle = window.getComputedStyle(gameWrapper);
   const paddingY =
     parseFloat(wrapperStyle.paddingTop) +
@@ -114,20 +116,17 @@ function resizeCanvas() {
     parseFloat(wrapperStyle.paddingLeft) +
     parseFloat(wrapperStyle.paddingRight);
 
-  // 상단 UI(제목, 점수판) 및 하단 출처 텍스트가 차지하는 실제 높이 합산
   const otherElementsHeight =
     (titleEl ? titleEl.offsetHeight + 12 : 0) +
     (scoreBoardEl ? scoreBoardEl.offsetHeight + 12 : 0) +
     (accountEl ? accountEl.offsetHeight + 12 : 0);
 
-  // 2. 캔버스가 들어갈 수 있는 최대 가로/세로 크기 도출 (PC 최대 너비 480px)
   const ABSOLUTE_MAX_WIDTH = 480;
   let maxWidth = Math.min(window.innerWidth - paddingX, ABSOLUTE_MAX_WIDTH);
   let maxHeight = window.innerHeight - paddingY - otherElementsHeight;
 
   if (maxHeight < 250) maxHeight = 250;
 
-  // 3. 기본 비율(360:640 = 9:16)을 유지하며 디바이스에 맞는 최적 크기 계산
   let displayWidth = maxWidth;
   let displayHeight = displayWidth * (LOGICAL_HEIGHT / LOGICAL_WIDTH);
 
@@ -139,7 +138,6 @@ function resizeCanvas() {
   container.style.width = `${Math.floor(displayWidth)}px`;
   container.style.height = `${Math.floor(displayHeight)}px`;
 
-  // 4. 고해상도(Retina 등) 디스플레이 대응 및 스케일 초기화
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = LOGICAL_WIDTH * dpr;
   canvas.height = LOGICAL_HEIGHT * dpr;
@@ -147,7 +145,6 @@ function resizeCanvas() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   cachedCanvasRect = canvas.getBoundingClientRect();
 
-  // 5. 캔버스 크기가 재설정되면 그려진 내용이 초기화되므로 대기 상태일 때 다시 그리기
   if (!isPlaying) {
     drawStaticScene();
   }
@@ -180,12 +177,13 @@ function startGame() {
 
   resetGame();
   isPlaying = true;
+  lastTime = performance.now();
 
   uiOverlay.classList.add("hidden");
   startScreen.classList.add("hidden");
   gameOverScreen.classList.add("hidden");
 
-  updateGame();
+  animationId = requestAnimationFrame(updateGame);
 
   speedIntervalId = setInterval(() => {
     if (isPlaying && speedLevel < MAX_LEVEL) {
@@ -246,9 +244,16 @@ container.addEventListener("touchstart", handlePointerMove, { passive: false });
 container.addEventListener("touchmove", handlePointerMove, { passive: false });
 container.addEventListener("mousemove", handlePointerMove);
 
-// --- Main Game Loop ---
-function updateGame() {
+function updateGame(currentTime) {
   if (!isPlaying) return;
+
+  const deltaTime = currentTime - lastTime;
+  lastTime = currentTime;
+
+  const timeScale = Math.min(deltaTime / FRAME_DURATION, 3);
+
+  const stepX = ball.dx * timeScale;
+  const stepY = ball.dy * timeScale;
 
   ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
@@ -256,21 +261,21 @@ function updateGame() {
   drawPaddle();
 
   // 좌우 벽 충돌 판정 및 즉시 위치 보정
-  if (ball.x + ball.dx < ball.radius) {
+  if (ball.x + stepX < ball.radius) {
     ball.dx = Math.abs(ball.dx);
     ball.x = ball.radius;
-  } else if (ball.x + ball.dx > LOGICAL_WIDTH - ball.radius) {
+  } else if (ball.x + stepX > LOGICAL_WIDTH - ball.radius) {
     ball.dx = -Math.abs(ball.dx);
     ball.x = LOGICAL_WIDTH - ball.radius;
   }
 
   // 상단 벽 충돌 판정 및 즉시 위치 보정
-  if (ball.y + ball.dy < ball.radius) {
+  if (ball.y + stepY < ball.radius) {
     ball.dy = Math.abs(ball.dy);
     ball.y = ball.radius;
   }
   // 하단 패들 충돌 판단 영역
-  else if (ball.y + ball.dy > LOGICAL_HEIGHT - paddle.height - ball.radius) {
+  else if (ball.y + stepY > LOGICAL_HEIGHT - paddle.height - ball.radius) {
     if (
       ball.dy > 0 &&
       ball.x >= paddle.x &&
@@ -296,7 +301,7 @@ function updateGame() {
 
       score += 100;
       scoreDisplay.innerText = score;
-    } else if (ball.y + ball.dy > LOGICAL_HEIGHT - ball.radius) {
+    } else if (ball.y + stepY > LOGICAL_HEIGHT - ball.radius) {
       endGame();
       return;
     }
@@ -304,15 +309,17 @@ function updateGame() {
 
   // 키보드 이동
   if (paddle.isMovingRight && paddle.x < LOGICAL_WIDTH - paddle.width) {
-    paddle.x += paddle.speed;
+    paddle.x = Math.min(
+      LOGICAL_WIDTH - paddle.width,
+      paddle.x + paddle.speed * timeScale,
+    );
   } else if (paddle.isMovingLeft && paddle.x > 0) {
-    paddle.x -= paddle.speed;
+    paddle.x = Math.max(0, paddle.x - paddle.speed * timeScale);
   }
 
-  // 공 위치 및 회전 애니메이션 업데이트
-  ball.x += ball.dx;
-  ball.y += ball.dy;
-  ball.angle += ball.dx * 0.02;
+  ball.x += ball.dx * timeScale;
+  ball.y += ball.dy * timeScale;
+  ball.angle += ball.dx * 0.02 * timeScale;
 
   animationId = requestAnimationFrame(updateGame);
 }
